@@ -3,6 +3,7 @@ package com.ascendcorp.exam.service;
 import com.ascendcorp.exam.model.InquiryServiceResultDTO;
 import com.ascendcorp.exam.model.TransferResponse;
 import com.ascendcorp.exam.proxy.BankProxyGateway;
+import jdk.nashorn.internal.runtime.regexp.joni.exception.InternalException;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.apache.commons.lang3.StringUtils;
@@ -16,9 +17,10 @@ public class InquiryService {
     @Autowired
     private BankProxyGateway bankProxyGateway;
 
-    final static Logger log = Logger.getLogger(InquiryService.class);
     private static final String MSG_ERROR_REQUIRED = "msg.error.required";
     private static final String MSG_GENERAL_INVALID_DATA = "msg.error.general_invalid_data";
+
+    final static Logger log = Logger.getLogger(InquiryService.class);
 
     /**
      * Validate request parameters before inquiry.
@@ -32,11 +34,11 @@ public class InquiryService {
      * @throws NullPointerException if the validation fail.
      */
     private void validateBeforeRequest(String transactionId,
-                                      Date tranDateTime,
-                                      String channel,
-                                      String bankCode,
-                                      String bankNumber,
-                                      double amount) {
+                                       Date tranDateTime,
+                                       String channel,
+                                       String bankCode,
+                                       String bankNumber,
+                                       double amount) {
         String errorMessage = null;
         if (StringUtils.isBlank(transactionId)) {
             errorMessage = MessageFormat.format(Utils.getMessagesProperties(MSG_ERROR_REQUIRED), "Transaction id");
@@ -141,7 +143,7 @@ public class InquiryService {
      * @return result.
      * @throws Exception if response is null or responseCode not support.
      */
-    public InquiryServiceResultDTO transformResponse(TransferResponse response) throws Exception {
+    public InquiryServiceResultDTO transformResponse(TransferResponse response) {
         InquiryServiceResultDTO inquiryResult = new InquiryServiceResultDTO();
         if (response != null) //New
         {
@@ -169,11 +171,11 @@ public class InquiryService {
                 inquiryResult = transformResponseUnknown(response.getDescription());
             } else {
                 // bank code not support
-                throw new Exception(Utils.getMessagesProperties("msg.error.unsupport_error_reason_code"));
+                throw new InternalException(Utils.getMessagesProperties("msg.error.unsupport_error_reason_code"));
             }
         } else {
             // no resport from bank
-            throw new Exception(Utils.getMessagesProperties("msg.error.unable.inquiry"));
+            throw new InternalException(Utils.getMessagesProperties("msg.error.unable.inquiry"));
         }
         return inquiryResult;
     }
