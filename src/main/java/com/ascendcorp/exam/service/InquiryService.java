@@ -31,7 +31,7 @@ public class InquiryService {
      * @param amount        - the value of amount
      * @throws NullPointerException if the validation fail.
      */
-    public void validateBeforeRequest(String transactionId,
+    private void validateBeforeRequest(String transactionId,
                                       Date tranDateTime,
                                       String channel,
                                       String bankCode,
